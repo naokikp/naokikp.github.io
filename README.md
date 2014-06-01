@@ -1,3 +1,3 @@
-naokikp.github.io
+http://naokikp.github.io/
 =================
 
