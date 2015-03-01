@@ -43,7 +43,8 @@ var msg_tfis = "Too few items in stack";
 var msg_tfics = "Too few items in callstack";
 var msg_rteoi = "Reached to end of input";
 var msg_divz = "division by zero";
-var msg_illn = "illegal number";
+var msg_illp = "illegal parameter, ";
+var msg_illn = "illegal number, ";
 
 var longtimeout = false;
 var timerid;
@@ -210,7 +211,7 @@ function plog(s){
 
 function number(s){
 	var len = s.length - 1;
-	if(len < 1) throw "number: illegal parameter, " + s;
+	if(len < 1) throw "number: " + msg_illp + s;
 	var sign = s[0] === 'S' ? 1 : -1;
 	var val = 0;
 	for(var i = 1; i < len; i++){
@@ -224,7 +225,7 @@ function label(s){ return s; }
 function op_push(n){ stack.push(n); }
 function op_dup(){ stack.push(stack[stack.length-1]);}
 function op_copy(n){
-	if(n < 0 || n >= stack.length) throw "copy: illegal parameter, " + n;
+	if(n < 0 || n >= stack.length) throw "copy: " + msg_illp + n;
 	stack.push(stack[stack.length-1-n]);
 }
 function op_swap(){
@@ -314,7 +315,7 @@ function op_end(){ return -1; }
 function op_prtc(){
 	if(stack.length < 1) throw msg_tfis;
 	var n = stack.pop();
-	if(n < 0) throw "prtc: illegal parameter, " + n;
+	if(n < 0) throw "prtc: " + msg_illp + n;
 	stdout += String.fromCharCode(n % 256);
 }
 function op_prtn(){
@@ -336,7 +337,7 @@ function op_readn(){
 	if(m < 0) m = stdin.length;
 	var s = stdin.substr(0,m);
 	stdin = stdin.substring(m+1);
-	if(s.match(/^\-?\d+$/)){
+	if(s.match(/^\s*\-?\d+\s*$/)){
 		heap[a] = parseInt(s);
-	} else throw msg_illn + ", " + s;
+	} else throw msg_illn + s;
 }
