@@ -1,5 +1,5 @@
 /*!
- * whitespace.js v0.1 (http://naokikp.github.io/wsi/whitespace.html)
+ * whitespace.js v0.2 (http://naokikp.github.io/wsi/whitespace.html)
  * Copyright 2015 @naoki_kp
  * Licensed under MIT (http://opensource.org/licenses/mit-license.php)
  */
