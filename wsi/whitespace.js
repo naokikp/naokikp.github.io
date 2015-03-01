@@ -337,7 +337,8 @@ function op_readn(){
 	if(m < 0) m = stdin.length;
 	var s = stdin.substr(0,m);
 	stdin = stdin.substring(m+1);
-	if(s.match(/^\s*\-?\d+\s*$/)){
-		heap[a] = parseInt(s);
+	var r = s.match(/^\s*(\-?)\s*(\d+)\s*$/);
+	if(r){
+		heap[a] = parseInt(r[1]+r[2]);
 	} else throw msg_illn + s;
 }
