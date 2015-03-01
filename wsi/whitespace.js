@@ -44,7 +44,7 @@ var msg_tfics = "Too few items in callstack";
 var msg_rteoi = "Reached to end of input";
 var msg_divz = "division by zero";
 var msg_illp = "illegal parameter, ";
-var msg_illn = "illegal number, ";
+var msg_illn = "(input)illegal number, ";
 
 var longtimeout = false;
 var timerid;
@@ -156,7 +156,7 @@ function do_run(){
 		$("#info_time").text(tm_end-tm_str + " ms.");
 	} catch(e){
 		$("#info_state").text("abort");
-		$("#info_msg").text(e + " : op[" + ridx + "]");
+		$("#info_msg").text("op[" + ridx + "] " + e);
 	}
 
 	$("#stdout").val(stdout);
