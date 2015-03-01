@@ -1,7 +1,7 @@
 /*!
- * whitespace.js v0.1 (http://)
+ * whitespace.js v0.1 (http://naokikp.github.io/wsi/whitespace.html)
  * Copyright 2015 @naoki_kp
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * Licensed under MIT (http://opensource.org/licenses/mit-license.php)
  */
 
 // JavaScriptほとんど書いたことないのでみちゃらめぇ
