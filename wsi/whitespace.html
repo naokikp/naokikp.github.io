@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Whitespace Interpreter</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="base.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="whitespace.js"></script>
+
+</head><body>
+	<div class="container">
+	    <h1>Hello, Whitespace!</h1>
+		<div class="row">
+			<div class="col-md-8">
+				<b>code</b><br />
+				<textarea id="code" class="form-control"></textarea>
+				<div class="text-right">
+					<div class="form-group">
+						<label class="checkbox-inline">
+							<button id="longtimeout" class="btn btn-info btn-md" />
+								<span class="glyphicon glyphicon-time"></span> <span id="tostr">Timeout(5sec)</span>
+							</button>
+						</label>
+						<label class="checkbox-inline">
+							<input id="parseonly" type="checkbox" />ParseOnly
+						</label>
+						<button id="run" class="btn btn-primary btn-md">
+						  	<span class="glyphicon glyphicon-play"></span> Run
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div id="info_header">info</div>
+				<div id="info_body">
+					<table class="table-condensed">
+						<tr><th class="text-left">size</th> <td id="info_size"  class="text-left">0</td></tr>
+						<tr><th class="text-left">state</th><td id="info_state" class="text-left">not running</td></tr>
+						<tr><th class="text-left">time</th><td id="info_time" class="text-left">-</td></tr>
+					</table>
+					<div id="info_msg"></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-8">
+				<b>input</b><br />
+				<textarea id="stdin" class="form-control"></textarea>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-8">
+				<b>output</b><br />
+				<textarea id="stdout" class="form-control"></textarea>
+			</div>
+		</div>
+
+		<div class="row col-md-8">
+			<a href="http://compsoc.dur.ac.uk/whitespace/">[about Whitespace]</a>
+			<address>
+				v0.1<br>
+				作った人 <strong>Twitter: <a href="https://twitter.com/naoki_kp/" target="_blank">@naoki_kp</a></strong><br>
+			</address>
+		</div>
+	</div>
+
+  </body>
+</html>
