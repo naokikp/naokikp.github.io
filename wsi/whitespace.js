@@ -209,8 +209,9 @@ function plog(s){
 }
 
 function number(s){
-	var sign = s[0] === 'S' ? 1 : -1;
 	var len = s.length - 1;
+	if(len < 1) throw "number: illegal parameter, " + s;
+	var sign = s[0] === 'S' ? 1 : -1;
 	var val = 0;
 	for(var i = 1; i < len; i++){
 		val *= 2;
