@@ -327,8 +327,9 @@ function op_readc(){
 function op_readn(){
 	if(stack.length < 1) throw msg_tfis;
 	var a = stack.pop();
+	if(stdin.length == 0) throw msg_rteoi;
 	var m = stdin.indexOf("\n");
-	if(m < 0) throw msg_rteoi;
+	if(m < 0) m = stdin.length;
 	heap[a] = parseInt(stdin.substr(0,m));
 	stdin = stdin.substring(m+1);
 }
