@@ -287,7 +287,7 @@ function op_store(){
 	heap[a] = v;
 }
 function op_load(){
-	if(stack.length < 2) throw msg_tfis;
+	if(stack.length < 1) throw msg_tfis;
 	var a = stack.pop();
 	if(a < 0) throw "load: illegal address, " + a;
 	stack.push(heap[a]);
