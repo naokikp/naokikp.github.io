@@ -44,7 +44,7 @@ var msg_tfics = "Too few items in callstack";
 var msg_rteoi = "Reached to end of input";
 var msg_divz = "division by zero";
 var msg_illp = "illegal parameter, ";
-var msg_illn = "(input)illegal number, ";
+var msg_illn = "(input) illegal number, ";
 
 var longtimeout = false;
 var timerid;
@@ -340,5 +340,5 @@ function op_readn(){
 	var r = s.match(/^\s*(\-?)\s*(\d+)\s*$/);
 	if(r){
 		heap[a] = parseInt(r[1]+r[2]);
-	} else throw msg_illn + s;
+	} else throw msg_illn + '"' + s + '"';
 }
