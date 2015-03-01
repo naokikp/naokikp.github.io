@@ -43,6 +43,7 @@ var msg_tfis = "Too few items in stack";
 var msg_tfics = "Too few items in callstack";
 var msg_rteoi = "Reached to end of input";
 var msg_divz = "division by zero";
+var msg_illn = "illegal number";
 
 var longtimeout = false;
 var timerid;
@@ -311,7 +312,9 @@ function op_end(){ return -1; }
 
 function op_prtc(){
 	if(stack.length < 1) throw msg_tfis;
-	stdout += String.fromCharCode(stack.pop());
+	var n = stack.pop();
+	if(n < 0) throw "prtc: illegal parameter, " + n;
+	stdout += String.fromCharCode(n % 256);
 }
 function op_prtn(){
 	if(stack.length < 1) throw msg_tfis;
@@ -330,6 +333,9 @@ function op_readn(){
 	if(stdin.length == 0) throw msg_rteoi;
 	var m = stdin.indexOf("\n");
 	if(m < 0) m = stdin.length;
-	heap[a] = parseInt(stdin.substr(0,m));
+	var s = stdin.substr(0,m);
 	stdin = stdin.substring(m+1);
+	if(s.match(/^\-?\d+$/)){
+		heap[a] = parseInt(s);
+	} else throw msg_illn + ", " + s;
 }
