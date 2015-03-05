@@ -55,9 +55,9 @@ var store;
 if(typeof sessionStorage !== 'undefined'){
 	store = sessionStorage;
 	var val = sessionStorage.getItem("longtimeout");
-	if(val) longtimeout = val;
+	if(val) longtimeout = (val === 'true');
 	var val = sessionStorage.getItem("visible");
-	if(val) visible = val;
+	if(val) visible  = (val === 'true');
 }
 
 $(document).ready( function() {
