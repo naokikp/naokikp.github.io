@@ -37,21 +37,6 @@
 			<div class="col-md-8">
 				<b>code</b><br />
 				<textarea id="code" class="form-control"></textarea>
-				<div class="text-right">
-					<div class="form-group">
-						<label class="checkbox-inline">
-							<button id="longtimeout" class="btn btn-info btn-md" />
-								<span class="glyphicon glyphicon-time"></span> <span id="tostr">Timeout(5sec)</span>
-							</button>
-						</label>
-						<label class="checkbox-inline">
-							<input id="parseonly" type="checkbox" />ParseOnly
-						</label>
-						<button id="run" class="btn btn-primary btn-md">
-						  	<span class="glyphicon glyphicon-play"></span> Run
-						</button>
-					</div>
-				</div>
 			</div>
 			<div class="col-md-3">
 				<div id="info_header">info</div>
@@ -62,6 +47,29 @@
 						<tr><th class="text-left">time</th><td id="info_time" class="text-left">-</td></tr>
 					</table>
 					<div id="info_msg"></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-5">
+				<div class="text-right">
+					<button id="longtimeout" class="btn btn-info btn-md" style="width:120px;" />
+						<span class="glyphicon glyphicon-time"></span> <span id="tostr">Timeout(5s)</span>
+					</button>
+					<button id="visible" class="btn btn-info btn-md" style="width:90px;" />
+						<span class="glyphicon glyphicon-search"></span> <span id="ivstr">Invisible</span>
+					</button>
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="text-right">
+					<label class="checkbox-inline">
+						<input id="parseonly" type="checkbox" />ParseOnly
+					</label>
+					<button id="run" class="btn btn-primary btn-md">
+					  	<span class="glyphicon glyphicon-play"></span> Run
+					</button>
 				</div>
 			</div>
 		</div>
@@ -83,7 +91,7 @@
 		<div class="row col-md-8">
 			<a href="http://compsoc.dur.ac.uk/whitespace/">[about Whitespace]</a>
 			<address>
-				v0.2<br>
+				v0.3<br>
 				作った人 <strong>Twitter: <a href="https://twitter.com/naoki_kp/" target="_blank">@naoki_kp</a></strong><br>
 			</address>
 		</div>

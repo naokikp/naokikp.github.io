@@ -1,5 +1,5 @@
 /*!
- * whitespace.js v0.2 (http://naokikp.github.io/wsi/whitespace.html)
+ * whitespace.js v0.3 (http://naokikp.github.io/wsi/whitespace.html)
  * Copyright 2015 @naoki_kp
  * Licensed under MIT (http://opensource.org/licenses/mit-license.php)
  */
@@ -48,7 +48,17 @@ var msg_illn = "(input) illegal number, ";
 var msg_nosl = "no such label, ";
 
 var longtimeout = false;
+var visible = false;
 var timerid;
+
+var store;
+if(typeof sessionStorage !== 'undefined'){
+	store = sessionStorage;
+	var val = sessionStorage.getItem("longtimeout");
+	if(val) longtimeout = val;
+	var val = sessionStorage.getItem("visible");
+	if(val) visible = val;
+}
 
 $(document).ready( function() {
 	$("#run").click(run);
@@ -78,10 +88,37 @@ $(document).ready( function() {
 	});
 	codesize();
 
+	var func_longtimeout = function(){
+		$("#tostr").text("Timeout("+(longtimeout?60:5)+"s)");
+	};
 	$("#longtimeout").click(function(){
 		longtimeout = !longtimeout;
-		$("#tostr").text("Timeout("+(longtimeout?60:5)+"sec)");
+		func_longtimeout();
+		if(store) sessionStorage.setItem("longtimeout", longtimeout);
 	});
+	func_longtimeout();
+
+	var func_visible = function(){
+		$("#ivstr").text(visible?"Visible":"Invisible");
+	};
+	$("#visible").click(function(){
+		visible = !visible;
+		func_visible();
+		if(store) sessionStorage.setItem("visible", visible);
+
+		// convert
+		var code = $("#code").val();
+		var tc;
+		if(visible){
+			tc = code.replace(/[^ \t\n]/g,"")
+			.replace(/ /g,"S").replace(/\t/g,"T").replace(/\n/g,"L");
+		} else {
+			tc = code.replace(/[^STLN]/g,"")
+			.replace(/S/g," ").replace(/T/g,"\t").replace(/[LN]/g,"\n");
+		}
+		$("#code").val(tc);
+	});
+	func_visible();
 });
 
 function codesize(){$("#info_size").text($("#code").val().length);}
@@ -152,21 +189,27 @@ function do_run(){
 			else if(nextridx < 0) break;
 			else ridx = nextridx;
 		}
-		var tm_end = +new Date();
 		$("#info_state").text("terminated");
-		$("#info_time").text(tm_end-tm_str + " ms.");
 	} catch(e){
 		$("#info_state").text("abort");
 		$("#info_msg").text("op[" + ridx + "] " + e);
 	}
+
+	var tm_end = +new Date();
+	$("#info_time").text(tm_end-tm_str + " ms.");
 
 	$("#stdout").val(stdout);
 	running = false;
 }
 
 function parse(code){
-	var tc = code.replace(/[^ \t\n]/g,"")
-		.replace(/ /g,"S").replace(/\t/g,"T").replace(/\n/g,"L");
+	var tc;
+	if(visible){
+		tc = code.replace(/[^STLN]/g,"").replace(/N/g,"L");
+	} else {
+		tc = code.replace(/[^ \t\n]/g,"")
+			.replace(/ /g,"S").replace(/\t/g,"T").replace(/\n/g,"L");
+	}
 
 	var inst = new Array();
 	var parm = new Array();
