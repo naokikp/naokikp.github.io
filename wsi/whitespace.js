@@ -45,6 +45,7 @@ var msg_rteoi = "Reached to end of input";
 var msg_divz = "division by zero";
 var msg_illp = "illegal parameter, ";
 var msg_illn = "(input) illegal number, ";
+var msg_nosl = "no such label, ";
 
 var longtimeout = false;
 var timerid;
@@ -193,7 +194,8 @@ function parse(code){
 				plog("["+(is[i][1]==='label'?"--":inst_num)+"] "+is[i][0]+" "+ps+" ("+is[i][1]+" "+parm[inst_num]+")");
 			}
 			if(is[i][1] === 'label'){
-				label[parm[inst_num]] = inst_num;
+				if(typeof label[parm[inst_num]] === 'undefined')
+					label[parm[inst_num]] = inst_num;
 			} else {
 				inst_num++;
 			}
@@ -201,6 +203,7 @@ function parse(code){
 			throw "unknown instruction : " + tc.substr(tcidx,8) + "...";
 		}
 	}
+	inst.length = parm.length = inst_num;
 	return [inst, parm];
 }
 
@@ -296,14 +299,22 @@ function op_load(){
 	stack.push(heap[a]);
 }
 
-function op_call(l,ridx){ callstack.push(ridx+1); return label[l]; }
-function op_jmp(l){ return label[l]; }
+function op_call(l,ridx){
+	if(typeof label[l] === 'undefined') throw msg_nosl + l;
+	callstack.push(ridx+1); return label[l];
+}
+function op_jmp(l){
+	if(typeof label[l] === 'undefined') throw msg_nosl + l;
+	return label[l];
+}
 function op_jmpz(l){
 	if(stack.length < 1) throw msg_tfis;
+	if(typeof label[l] === 'undefined') throw msg_nosl + l;
 	if(stack.pop() == 0) return label[l];
 }
 function op_jmpn(l){
 	if(stack.length < 1) throw msg_tfis;
+	if(typeof label[l] === 'undefined') throw msg_nosl + l;
 	if(stack.pop() < 0) return label[l];
 }
 function op_ret(){
