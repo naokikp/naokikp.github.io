@@ -1,5 +1,5 @@
 /*!
- * whitespace.js v0.3 (http://naokikp.github.io/wsi/whitespace.html)
+ * whitespace.js v0.4 (http://naokikp.github.io/wsi/whitespace.html)
  * Copyright 2015 @naoki_kp
  * Licensed under MIT (http://opensource.org/licenses/mit-license.php)
  */
@@ -80,12 +80,21 @@ $(document).ready( function() {
 				addStr(this.activeElement.id, "\t");
 				e.preventDefault();
 			}
+			if(e.ctrlKey && e.keyCode === 13) run();
 			setTimeout(codesize, 0);
 		}
 	})
 	.blur(function(){
 		window.document.onkeydown = function(e){return true;}
 	});
+
+	var param = window.location.search;
+	if(param.length > 1){
+		var code = param.substring(1).replace(/[^STLN]/g,"").replace(/N/g,"L");
+		if(!visible) code = to_invisible(code);
+		$("#code").val(code);
+	}
+
 	codesize();
 
 	var func_longtimeout = function(){
@@ -108,18 +117,18 @@ $(document).ready( function() {
 
 		// convert
 		var code = $("#code").val();
-		var tc;
-		if(visible){
-			tc = code.replace(/[^ \t\n]/g,"")
-			.replace(/ /g,"S").replace(/\t/g,"T").replace(/\n/g,"L");
-		} else {
-			tc = code.replace(/[^STLN]/g,"")
-			.replace(/S/g," ").replace(/T/g,"\t").replace(/[LN]/g,"\n");
-		}
+		var tc = (visible?to_visible:to_invisible)(code);
 		$("#code").val(tc);
 	});
 	func_visible();
 });
+
+function to_invisible(s){
+	return s.replace(/[^STLN]/g,"").replace(/S/g," ").replace(/T/g,"\t").replace(/[LN]/g,"\n");
+}
+function to_visible(s){
+	return s.replace(/[^ \t\n]/g,"").replace(/ /g,"S").replace(/\t/g,"T").replace(/\n/g,"L");
+}
 
 function codesize(){$("#info_size").text($("#code").val().length);}
 
@@ -207,8 +216,7 @@ function parse(code){
 	if(visible){
 		tc = code.replace(/[^STLN]/g,"").replace(/N/g,"L");
 	} else {
-		tc = code.replace(/[^ \t\n]/g,"")
-			.replace(/ /g,"S").replace(/\t/g,"T").replace(/\n/g,"L");
+		tc = to_visible(code);
 	}
 
 	var inst = new Array();
