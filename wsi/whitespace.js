@@ -1,5 +1,5 @@
 /*!
- * whitespace.js v0.4 (http://naokikp.github.io/wsi/whitespace.html)
+ * whitespace.js v0.5 (http://naokikp.github.io/wsi/whitespace.html)
  * Copyright 2015 @naoki_kp
  * Licensed under MIT (http://opensource.org/licenses/mit-license.php)
  */
@@ -61,7 +61,8 @@ if(typeof sessionStorage !== 'undefined'){
 }
 
 $(document).ready( function() {
-	$("#run").click(run);
+	$("#run").click(function(){run(false);});
+	$("#step").click(function(){run(true);});
 
 	// ref: http://scrap.php.xdomain.jp/textarea_insert_tab/
 	function addStr(id, str){
@@ -95,6 +96,7 @@ $(document).ready( function() {
 		$("#code").val(code);
 	}
 
+	$("#code").prop("disabled", false);
 	codesize();
 
 	var func_longtimeout = function(){
@@ -138,25 +140,31 @@ var stack = new Array();
 var callstack = new Array();
 var stdin, stdout;
 var parselog;
-var inst, parm;
+var inst, parm, opcd;
 var running = false;
+var steprunning = false;
 
 var tm_str;
 var ridx;
+var heapidx_last;
 
-function run(){
+function run(step){
 	if(running) return;
+	if(steprunning){
+		return do_run(step);
+	}
+
 	var code = $("#code").val();
 	stdin = $("#stdin").val();
 	stdout = parselog = "";
 	label.length = heap.length = stack.length = callstack.length = 0;
+	heapidx_last = -1;
 
 	try {
 		$("#info_state").text("parsing");
 		$("#info_msg").text("");
 		var ic = parse(code);
-		inst = ic[0];
-		parm = ic[1];
+		inst = ic[0], parm = ic[1], opcd = ic[2];
 	} catch(e){
 		$("#info_state").text("parse error");
 		$("#info_msg").text(e);
@@ -169,35 +177,100 @@ function run(){
 		$("#stdout").val(parselog);
 		return;
 	}
-	$("#info_state").text("running");
 	ridx = 0;
 	tm_str = +new Date();
-	running = true;
-	setTimeout(do_run, 0);
+
+	if(step){
+		$("#code").prop("disabled", true);
+		$("#dinfo").show();
+		$("#info_state").text("running(step)");
+		disp_dinfo();
+		steprunning = true;
+	} else {
+		$("#dinfo").hide();
+		$("#info_state").text("running");
+		setTimeout(do_run, 0);
+		running = true;
+	}
 }
 
-function do_run(){
+function disp_dinfo(){
+	if(ridx < 0){
+		$("#dinfo_pos").text("-");
+	} else {
+		$("#dinfo_pos").text("["+ridx+"] "+opcd[ridx]);
+	}
+	if(stack.length == 0){
+		$("#dinfo_stack").text("-");
+	} else {
+		var l = stack.length;
+		var s = "";
+		for(var i = 0; i < 8; i++){
+			if(i >= l) break;
+			s += "["+i+"] "+stack[l-i-1]+"\n";
+		}
+		$("#dinfo_stack").text(s);
+	}
+
+	var j = heapidx_last - 3;
+	if(j < 0) j = 0;
+	var s = "";
+	for(var i = j; i < j+8; i++){
+		var v = heap[i];
+		if(typeof v == "undefined") v = "-";
+		var t = "["+i+"] "+v;
+		if(i == heapidx_last){
+			s += "<span class=\"text-success\"><strong>"+t+"</strong></span>\n";
+		} else {
+			s += t+"\n";
+		}
+	}
+	$("#dinfo_heap").html(s);
+
+	$("#stdout").val(stdout);
+}
+
+function do_run(step){
 	var tm_limit = 5*1000;
 	if(longtimeout) tm_limit = 60*1000;
+
+	if(steprunning && !step){
+		$("#dinfo").hide();
+		tm_str = +new Date();
+		steprunning = false;
+		running = true;
+	}
+
 	var tm_str2 = +new Date();
 	var inst_len = inst.length;
+	var dostep = false;
 	try {
 		while(ridx < inst_len){
-			var tm_now = +new Date();
-			if(tm_now-tm_str2 > 500){
-				$("#info_time").text(tm_now-tm_str + " ms.");
-				if(tm_now-tm_str > tm_limit) throw "Timeout";
+			if(steprunning){
+				if(dostep){
+					disp_dinfo();
+					return;
+				}
+			} else {
+				var tm_now = +new Date();
+				if(tm_now-tm_str2 > 500){
+					$("#info_time").text(tm_now-tm_str + " ms.");
+					if(tm_now-tm_str > tm_limit) throw "Timeout";
 
-				// 再実行
-				setTimeout(do_run, 0);
-				return;
+					// 再実行
+					setTimeout(do_run, 0);
+					return;
+				}
 			}
 
 			var nextridx = inst[ridx](parm[ridx],ridx);
 			if(typeof nextridx === "undefined") ridx++;
 			else if(nextridx < 0) break;
 			else ridx = nextridx;
+			dostep = true;
 		}
+		ridx = -1;
+		if(steprunning) disp_dinfo();
 		$("#info_state").text("terminated");
 	} catch(e){
 		$("#info_state").text("abort");
@@ -207,8 +280,9 @@ function do_run(){
 	var tm_end = +new Date();
 	$("#info_time").text(tm_end-tm_str + " ms.");
 
+	$("#code").prop("disabled", false);
 	$("#stdout").val(stdout);
-	running = false;
+	running = steprunning = false;
 }
 
 function parse(code){
@@ -221,18 +295,19 @@ function parse(code){
 
 	var inst = new Array();
 	var parm = new Array();
+	var opcd = new Array();
 	var tclen = tc.length;
 	var tcidx = 0;
 	var inst_num = 0;
 	var islen = is.length;
 
 	while(tcidx < tclen){
-		var i;
-		for(i = 0; i < islen; i++){
+		for(var i = 0; i < islen; i++){
 			if(tc.substr(tcidx, is[i][0].length) === is[i][0]) break;
 		}
 		if(i < islen){
 			inst[inst_num] = is[i][2];
+			opcd[inst_num] = is[i][1];
 			tcidx += is[i][0].length;
 			if(!is[i][3]){
 				plog("["+inst_num+"] "+is[i][0]+" ("+is[i][1]+")");
@@ -241,6 +316,7 @@ function parse(code){
 				if(!m) throw msg_ueoc + " at " + tcidx;
 				var ps = m[0];
 				parm[inst_num] = is[i][3](ps);
+				opcd[inst_num] += " " + parm[inst_num];
 				tcidx += ps.length;
 				plog("["+(is[i][1]==='label'?"--":inst_num)+"] "+is[i][0]+" "+ps+" ("+is[i][1]+" "+parm[inst_num]+")");
 			}
@@ -254,8 +330,8 @@ function parse(code){
 			throw "unknown instruction : " + tc.substr(tcidx,8) + "...";
 		}
 	}
-	inst.length = parm.length = inst_num;
-	return [inst, parm];
+	inst.length = parm.length = opcd.length = inst_num;
+	return [inst, parm, opcd];
 }
 
 function plog(s){
@@ -342,12 +418,16 @@ function op_store(){
 	var a = stack.pop();
 	if(a < 0) throw "store: illegal address, " + a;
 	heap[a] = v;
+	heapidx_last = a;
 }
 function op_load(){
 	if(stack.length < 1) throw msg_tfis;
 	var a = stack.pop();
 	if(a < 0) throw "load: illegal address, " + a;
-	stack.push(heap[a]);
+	var v = heap[a];
+	if(typeof v === "undefined") v = 0;
+	stack.push(v);
+	heapidx_last = a;
 }
 
 function op_call(l,ridx){
@@ -390,6 +470,7 @@ function op_readc(){
 	if(stdin.length < 1) throw msg_rteoi;
 	heap[a] = stdin.charCodeAt(0);
 	stdin = stdin.substring(1);
+	heapidx_last = a;
 }
 function op_readn(){
 	if(stack.length < 1) throw msg_tfis;
@@ -403,4 +484,5 @@ function op_readn(){
 	if(r){
 		heap[a] = parseInt(r[1]+r[2]);
 	} else throw msg_illn + '"' + s + '"';
+	heapidx_last = a;
 }

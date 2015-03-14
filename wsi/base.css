@@ -17,16 +17,25 @@ textarea#stdout {
     background-color: whitesmoke;
 }
 
-div#info_header {
+div#info_header, div#dinfo_header {
     background: none repeat scroll 0 0 aliceblue;
     border: 1px solid lightgray;
     border-radius: 4px 4px 0 0;
     text-align: center;
 }
-div#info_body {
+div#info_body, div#dinfo_body {
     background: none repeat scroll 0 0 white;
     border: 1px solid lightgray;
     border-width: 0 1px 1px;
     border-radius: 0 0 4px 4px;
     text-align: center;
+}
+
+#dinfo_body th {
+	vertical-align: top;
+}
+td#dinfo_stack, td#dinfo_heap {
+	height: 170px;
+	vertical-align: top;
+	white-space: pre;
 }
