@@ -177,6 +177,12 @@ function run(step){
 		$("#stdout").val(parselog);
 		return;
 	}
+	if(inst.length == 0){
+		$("#info_state").text("not running");
+		$("#info_time").text("-");
+		return;
+	}
+
 	ridx = 0;
 	tm_str = +new Date();
 
