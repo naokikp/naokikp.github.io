@@ -1,5 +1,5 @@
 /*!
- * whitespace.js v0.5 (http://naokikp.github.io/wsi/whitespace.html)
+ * whitespace.js v0.6 (http://naokikp.github.io/wsi/whitespace.html)
  * Copyright 2015 @naoki_kp
  * Licensed under MIT (http://opensource.org/licenses/mit-license.php)
  */
@@ -134,7 +134,7 @@ function to_visible(s){
 
 function codesize(){$("#info_size").text($("#code").val().length);}
 
-var label = new Array();
+var label;
 var heap = new Array();
 var stack = new Array();
 var callstack = new Array();
@@ -157,7 +157,9 @@ function run(step){
 	var code = $("#code").val();
 	stdin = $("#stdin").val();
 	stdout = parselog = "";
-	label.length = heap.length = stack.length = callstack.length = 0;
+	delete label;
+	label = new Object();
+	heap.length = stack.length = callstack.length = 0;
 	heapidx_last = -1;
 
 	try {
