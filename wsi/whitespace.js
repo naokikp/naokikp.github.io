@@ -350,10 +350,10 @@ function plog(s){
 function number(s){
 	var len = s.length - 1;
 	if(len < 1) throw "number: " + msg_illp + s;
-	var sign = s[0] === 'S' ? 1 : -1;
-	var val = 0;
+	var sign = s[0] === 'S' ? 1n : -1n;
+	var val = 0n;
 	for(var i = 1; i < len; i++){
-		val *= 2;
+		val *= 2n;
 		if(s[i] === 'T') val++;
 	}
 	return sign * val;
@@ -364,7 +364,7 @@ function op_push(n){ stack.push(n); }
 function op_dup(){ stack.push(stack[stack.length-1]);}
 function op_copy(n){
 	if(n < 0 || n >= stack.length) throw "copy: " + msg_illp + n;
-	stack.push(stack[stack.length-1-n]);
+	stack.push(stack[stack.length-1-Number(n)]);
 }
 function op_swap(){
 	var l = stack.length;
@@ -376,6 +376,7 @@ function op_pop(){
 	stack.pop();
 }
 function op_slide(n){
+	n = Number(n);
 	var l = stack.length;
 	if(l < n+1) throw msg_tfis;
 	stack.splice(l-n-1, n);
@@ -401,7 +402,7 @@ function op_div(){
 	if(l < 2) throw msg_tfis;
 	var v = stack.pop();
 	if(v == 0) throw msg_divz;
-	stack[l-2] = Math.floor(stack[l-2] / v);
+	stack[l-2] = stack[l-2] / v;
 }
 function op_mod(){
 	var l = stack.length;
@@ -424,17 +425,17 @@ function op_store(){
 	if(stack.length < 2) throw msg_tfis;
 	var v = stack.pop();
 	var a = stack.pop();
-	if(a < 0) throw "store: illegal address, " + a;
-	heap[a] = v;
+	if(a < 0n) throw "store: illegal address, " + a;
+	heap[a] = BigInt(v);
 	heapidx_last = a;
 }
 function op_load(){
 	if(stack.length < 1) throw msg_tfis;
 	var a = stack.pop();
-	if(a < 0) throw "load: illegal address, " + a;
+	if(a < 0n) throw "load: illegal address, " + a;
 	var v = heap[a];
-	if(typeof v === "undefined") v = 0;
-	stack.push(v);
+	if(typeof v === "undefined") v = 0n;
+	stack.push(BigInt(v));
 	heapidx_last = a;
 }
 
@@ -465,8 +466,8 @@ function op_end(){ return -1; }
 function op_prtc(){
 	if(stack.length < 1) throw msg_tfis;
 	var n = stack.pop();
-	if(n < 0) throw "prtc: " + msg_illp + n;
-	stdout += String.fromCharCode(n % 256);
+	if(n < 0n) throw "prtc: " + msg_illp + n;
+	stdout += String.fromCharCode(Number(n % 256n));
 }
 function op_prtn(){
 	if(stack.length < 1) throw msg_tfis;
@@ -476,7 +477,7 @@ function op_readc(){
 	if(stack.length < 1) throw msg_tfis;
 	var a = stack.pop();
 	if(stdin.length < 1) throw msg_rteoi;
-	heap[a] = stdin.charCodeAt(0);
+	heap[a] = BigInt(stdin.charCodeAt(0));
 	stdin = stdin.substring(1);
 	heapidx_last = a;
 }
@@ -490,7 +491,7 @@ function op_readn(){
 	stdin = stdin.substring(m+1);
 	var r = s.match(/^\s*(\-?)\s*(\d+)\s*$/);
 	if(r){
-		heap[a] = parseInt(r[1]+r[2]);
+		heap[a] = BigInt(parseInt(r[1]+r[2]));
 	} else throw msg_illn + '"' + s + '"';
 	heapidx_last = a;
 }
