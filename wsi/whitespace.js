@@ -160,7 +160,7 @@ function run(step){
 	delete label;
 	label = new Object();
 	heap.length = stack.length = callstack.length = 0;
-	heapidx_last = -1;
+	heapidx_last = -1n;
 
 	try {
 		$("#info_state").text("parsing");
@@ -220,10 +220,10 @@ function disp_dinfo(){
 		$("#dinfo_stack").text(s);
 	}
 
-	var j = heapidx_last - 3;
-	if(j < 0) j = 0;
+	var j = heapidx_last - 3n;
+	if(j < 0n) j = 0n;
 	var s = "";
-	for(var i = j; i < j+8; i++){
+	for(var i = j; i < j+8n; i++){
 		var v = heap[i];
 		if(typeof v == "undefined") v = "-";
 		var t = "["+i+"] "+v;
